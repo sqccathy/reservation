@@ -1,5 +1,4 @@
 import time
-import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -8,88 +7,143 @@ from selenium_stealth import stealth
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from multiprocessing import Pool
+import sys
+import random
 
-options = Options()
+# options = Options()
 
-options.add_experimental_option("excludeSwitches", ["enable-automation"])
-options.add_experimental_option('useAutomationExtension', False)
-options.add_experimental_option('prefs', {
-    'credentials_enable_service': False,
-    'profile': {
-        'password_manager_enabled': False
-    }
-})
-s = Service('C:\\Windows\\chromedriver.exe')
-driver = webdriver.Chrome(service=s, options=options)
+# options.add_experimental_option("excludeSwitches", ["enable-automation"])
+# options.add_experimental_option('useAutomationExtension', False)
+# options.add_experimental_option('prefs', {
+#     'credentials_enable_service': False,
+#     'profile': {
+#         'password_manager_enabled': False
+#     }
+# })
+# s = Service('C:\\Users\\sqcca\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe')
+# driver = webdriver.Chrome(service=s, options=options)
 
-wait = WebDriverWait(driver, 30)
+# wait = WebDriverWait(driver, 30)
 
-stealth(driver,
-      languages=["en-US", "en"],
-      vendor="Google Inc.",
-      platform="Win32",
-      webgl_vendor="Intel Inc.",
-      renderer="Intel Iris OpenGL Engine",
-      fix_hairline=True,
-)
+# stealth(driver,
+#       languages=["en-US", "en"],
+#       vendor="Google Inc.",
+#       platform="Win32",
+#       webgl_vendor="Intel Inc.",
+#       renderer="Intel Iris OpenGL Engine",
+#       fix_hairline=True,
+# )
 
 
-#CLAIM RESERVATION
+# #CLAIM RESERVATION
+# name = "tfl"
+# month = "03"
+# day = "22"
+# size = "4"
+# timeorig = "20:30"
+# picktime = timeorig.replace(":","%3A")
 
-#change name, date, size, time
-name = "NAME"
+# url = "https://www.exploretock.com/" + name + "/search?date=2024-" + month + "-" + day + "&size=" + size + "&time=" + picktime
 
-month = "MONTH (2 digit)"
+# driver.get(url)
 
-day = "DAY (2 digit)"
+# time.sleep(0.5)
 
-size = "SIZE"
+# #change reservation name and time
+# while True:
+#     try: 
+#         res = driver.find_element(By.XPATH, "//button[@class='Consumer-resultsListItem is-available']")
+#         res.click()
+#         sys.exit("Program stopped.")
+#     except:
+#         pass
+#     time.sleep(0.5)
+#     print("trying again")
 
-timeorig = "TIME (military)"
+def booking(date: str):
+    options = Options()
 
-picktime = timeorig.replace(":","%3A")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_experimental_option('prefs', {
+        'credentials_enable_service': False,
+        'profile': {
+            'password_manager_enabled': False
+        }
+    })
+    s = Service('C:\\Users\\sqcca\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe')
+    driver = webdriver.Chrome(service=s, options=options)
 
-url = "https://www.exploretock.com/" + name + "/search?date=2022-" + month + "-" + day + "&size=" + size + "&time=" + picktime
+    wait = WebDriverWait(driver, 30)
 
-t = datetime.datetime.today()
-#change time to reserve
-#military time hour
-acthour =  0 
-future = datetime.datetime(t.year,t.month,t.day,acthour,0,1)
-time.sleep((future-t).total_seconds())
+    stealth(driver,
+        languages=["en-US", "en"],
+        vendor="Google Inc.",
+        platform="Win32",
+        webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine",
+        fix_hairline=True,
+    )
 
-driver.get(url)
 
-time.sleep(0.5)
+    #CLAIM RESERVATION
+    name = "tfl"
+    month = "04"
+    day = date
+    size = "2"
+    timeorig = "20:30"
+    picktime = timeorig.replace(":","%3A")
 
-#change reservation name and time
-resname = 'KEYWORD'
-restime = 'TIME PM'
-res = driver.find_element(By.XPATH, "//div[@class='SearchModalExperiences-item Consumer-reservation' and .//h2[contains(.,resname)]]//button[./span[contains(.,restime)]]")
+    #change reservation name and time
+    while True:
+        url = "https://www.exploretock.com/" + name + "/search?date=2024-" + month + "-" + day + "&size=" + size + "&time=" + picktime
+        driver.get(url)
+        time.sleep(0.5)
+        try: 
+            res = driver.find_element(By.XPATH, "//button[@class='Consumer-resultsListItem is-available']")
+            res.click()
+            print("good")
+            break
+        except:
+            pass
+        time.sleep(random.random())
+        print("trying again")
 
-res.click()
+import multiprocessing
+if __name__ == '__main__':
+    pool = multiprocessing.Pool(8)
+    results = pool.map(booking, ["06","07","13","14", "20","21", "27", "28"])
+    pool.close()
+    pool.join()
 
+    print(results)
 
 #OPTIONAL: CONFIRM RESERVATION
 
 
-#login = driver.find_element(By.XPATH, "//*[@id='#maincontent']/div/div[1]/div/div/div/div/div[2]/div[3]/span/button")
+# login = driver.find_element(By.XPATH, "//*[@id='#maincontent']/div/div[1]/div/div/div/div/div[2]/form/div/div[1]/div")
 
-#login.click()
+# login.click()
 
-#user = driver.find_element(By.ID, "email")
+# user = driver.find_element(By.ID, "email")
 
-email = "EMAIL"
+# email = "sqccathy@gmail.com"
 
-#user.send_keys(email)
+# user.send_keys(email)
 
-#pas = driver.find_element(By.ID, "password")
+# pas = driver.find_element(By.ID, "password")
 
-password = "PASSWORD"
+# password = "qichensun"
 
-#pas.send_keys(password)
+# pas.send_keys(password)
 
-#pas.submit()
+
+# time.sleep(5)
+# WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,"//iframe[@title='Widget containing a Cloudflare security challenge']")))
+# #WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//label[@class='ctp-checkbox-label']"))).click()
+
+# pas.submit()
 
 #time.sleep(4)
 
